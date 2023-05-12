@@ -40,4 +40,8 @@ new_map = mapa.createGraph(V , A)
 serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 
+mapa.insert_fixed(new_map, "H1", [(1, 15), (2, 15)]) 
+
+print("hola")
+
 
