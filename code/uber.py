@@ -40,7 +40,10 @@ new_map = mapa.createGraph(V , A)
 serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 
-mapa.insert_fixed(new_map, "H1", [(1, 15), (2, 15)]) 
+mapa.insert_fixed(new_map, "H1", [(1, 15), (2, 15)]) #Calle en doble sentido
+mapa.insert_fixed(new_map, "H2", [(2, 30), (3, 40)]) #Calle en un sentido
+print(mapa.insert_fixed(new_map, "H3", [(2, 30), (3, 60)])) #Ingreso una direccion no válida
+
 
 print("hola")
 

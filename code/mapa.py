@@ -37,13 +37,15 @@ class Graph:
         dict = self.connections(dict , aristas)
         return dict
     
-    def insert(self, mapa, nodo, v1, v2): # Inserta nodo individual
+    def insert(self, mapa, nodo, esquina_x , esquina_y): # Inserta nodo individual
 
-        v1_node = Node(v1, nodo.direccion[0][1])
-        v2_node = Node(v2, nodo.direccion[1][1])
+        if esquina_x != None:
+            v1_node = Node(esquina_x, nodo.direccion[0][1])
+            mapa[nodo.nombre].list.append(v1_node)
 
-        mapa[nodo.nombre].list.append(v1_node)
-        mapa[nodo.nombre].list.append(v2_node)
+        if esquina_y != None:
+            v2_node = Node(esquina_y, nodo.direccion[1][1])
+            mapa[nodo.nombre].list.append(v2_node)
         
 
 
@@ -60,42 +62,60 @@ class Graph:
     
     def insert_fixed(self, mapa, nombre, direccion):
 
-        node = Ubicacion(nombre, direccion)
-        e_x = direccion[0] # tupla 
-        e_y = direccion[1]
+        suma_aux = direccion[0][1] + direccion[1][1]
 
-        v1 = e_x[0] # 
-        v2 = e_y[0]
+        node = Ubicacion(nombre, direccion)
+        tupla_x = direccion[0] # tupla 
+        tupla_y = direccion[1]
+
+        v1 = tupla_x[0] # 
+        v2 = tupla_y[0]
 
         flag1 = False
         flag2 = False
 
+        #La calle va de v2 a v1
         for objeto in mapa[v2].list:
             if objeto.key == v1:
                 flag1 = True
+                if suma_aux != objeto.distancia:
+                    return "La direccion ingresada no es válida"
 
+
+        #La calle va de v1 a v2
         for objeto in mapa[v1].list:
             if objeto.key == v2:
                 flag2 = True
+                if suma_aux != objeto.distancia:
+                    return "La direccion ingresada no es válida"
+
 
         if flag1 == True and flag2 == True: ## la calle es doble mano
             
             mapa[node.nombre] = node # agregamos una nueva ubicacion en el mapa
 
-            self.insert(mapa, node, v1, v2) # Insertamos en la ubicacion las esquinas adyacentes y las distancias
+            self.insert(mapa, node , v1 , v2) # Insertamos en la ubicacion las esquinas adyacentes y las distancias
 
-            # insertamos en las esquinas la nueva adyacencia
-            aux = Node(node.nombre, e_x[1]) 
+            # Insertamos en las esquinas la nueva adyacencia
+            aux = Node(node.nombre, tupla_x[1]) 
             mapa[v1].list.append(aux) 
-            aux = Node(node.nombre, e_y[1]) 
+            aux = Node(node.nombre, tupla_y[1]) 
             mapa[v2].list.append(aux)
             
-        elif flag1 == True: # COMPLETAR CASOS
-            pass
-        
-        else:   
-            pass
-            
+        elif flag1 == True:     #La calle va de v2 a v1
+            mapa[node.nombre] = node 
+            self.insert(mapa , node , v1 , None)
+
+            aux = Node(node.nombre , tupla_y[1])
+            mapa[v2].list.append(aux)
+        else:                   #La calle va de v1 a v2
+            mapa[node.nombre] = node 
+            self.insert(mapa , node , None , v2)
+
+            aux = Node(node.nombre , tupla_x[1])
+            mapa[v1].list.append(aux)
+
+        #Al crear un insert movil vamos a tener algo similar solo que le agrego el campo monto
 
 
 
