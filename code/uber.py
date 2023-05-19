@@ -19,7 +19,7 @@ def leer_archivo(archivo):
 
     return V, A
 
-def serializar_archivo(objeto):
+def serializar_archivo(objeto):  # Se serializa el mapa (Diccionario)
     import pickle
 
     with open("serializado.txt" , "bw") as ser:
@@ -32,19 +32,31 @@ def hacer_lectura(archivo):
         mapa = pickle.load(map)
     return mapa
 
+
+# def load_map(local_path): ## Planteamiento
+#     V, A = leer_archivo(local_path)
+#     mapa = m.Map(V , A)
+#     new_map = mapa.createMap(V , A) # Mapa con nodos y aristas
+#     serializar_archivo(new_map)
+#     print(V)
+
+#def load_fix_element(nombre, direccion, map=hacer_lectura("serializado.txt")): ## Planteamiento
+
 V, A = leer_archivo("mapa.txt")
 print(V)
 print(A)
-mapa = m.Graph(V , A)
-new_map = mapa.createGraph(V , A)
+mapa = m.Map(V , A)
+new_map = mapa.createMap(V , A)
 serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 
 mapa.insert_fixed(new_map, "H1", [(1, 15), (2, 15)]) #Calle en doble sentido
 mapa.insert_fixed(new_map, "H2", [(2, 30), (3, 40)]) #Calle en un sentido
 print(mapa.insert_fixed(new_map, "H3", [(2, 30), (3, 60)])) #Ingreso una direccion no válida
+mapa.insert_movile(new_map, "P1", [(1, 15), (2, 15)], 150)
+print(mapa.insert_movile(new_map, "P1", [(4, 10), (2, 10)], 600))
 
 
-print("hola")
+#print("hola")
 
 

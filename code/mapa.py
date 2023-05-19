@@ -1,11 +1,11 @@
-class GraphNode:
+class MapNode:
     def __init__(self , key = None , aristas = None , distancia = None):
         self.key = key
         self.list = []    #Esta lista sirve para poner sus nodos adyacentes
         self.connections = aristas
         self.distancia = distancia
 
-class Node: # clase creada para ser insertada 
+class Node: # clase creada para ser insertada a la lista de adyacencia
     def __init__(self , key = None, distancia = None):
         self.key = key
         self.distancia = distancia
@@ -17,22 +17,22 @@ class Ubicacion: # Nodo que representa una ubicacion fija
         self.list = []
         
 
-class Movil(Ubicacion):
+class Movil(Ubicacion): # Nodo que representa una Persona o un Auto
     def __init__(self, nombre, direccion, monto):
         super().__init__(nombre, direccion)
         self.monto = monto
         
-class Graph:
+class Map:
     def __init__(self , vertices = None , aristas = None):
         self.vertices = vertices
         self.aristas = aristas
         
-    def createGraph(self , vertices, aristas):
+    def createMap(self , vertices, aristas):
         dict = {}
         #Agrego las esquinas
         for key in range(len(vertices)):
             pos = vertices[key]
-            dict[pos] = GraphNode(pos)
+            dict[pos] = MapNode(pos)
 
         dict = self.connections(dict , aristas)
         return dict
@@ -46,7 +46,8 @@ class Graph:
         if esquina_y != None:
             v2_node = Node(esquina_y, nodo.direccion[1][1])
             mapa[nodo.nombre].list.append(v2_node)
-        
+    
+    # def delete(self, mapa, nodo) #### IMPLEMENTAR FUNCION DELETE PARA MOVILIZAR LOS NODOS (CREATE-TRIP)
 
 
     def connections(self , dict , aristas):
@@ -62,13 +63,16 @@ class Graph:
     
     def insert_fixed(self, mapa, nombre, direccion):
 
+        if nombre in mapa:
+            return "El nombre de la ubicacion ya existe"
+
         suma_aux = direccion[0][1] + direccion[1][1]
 
         node = Ubicacion(nombre, direccion)
-        tupla_x = direccion[0] # tupla 
+        tupla_x = direccion[0] 
         tupla_y = direccion[1]
 
-        v1 = tupla_x[0] # 
+        v1 = tupla_x[0] 
         v2 = tupla_y[0]
 
         flag1 = False
@@ -114,9 +118,64 @@ class Graph:
 
             aux = Node(node.nombre , tupla_x[1])
             mapa[v1].list.append(aux)
+      
 
-        #Al crear un insert movil vamos a tener algo similar solo que le agrego el campo monto
+    def insert_movile(self, mapa, nombre, direccion, monto):
+
+        if nombre in mapa:
+            return "El nombre de la ubicacion ya existe" #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
+
+        suma_aux = direccion[0][1] + direccion[1][1]
+
+        node = Movil(nombre, direccion, monto)
+        tupla_x = direccion[0]  
+        tupla_y = direccion[1]
+
+        v1 = tupla_x[0] 
+        v2 = tupla_y[0]
+
+        flag1 = False
+        flag2 = False
+
+        #La calle va de v2 a v1
+        for objeto in mapa[v2].list:
+            if objeto.key == v1:
+                flag1 = True
+                if suma_aux != objeto.distancia:
+                    return "La direccion ingresada no es válida"
 
 
+        #La calle va de v1 a v2
+        for objeto in mapa[v1].list:
+            if objeto.key == v2:
+                flag2 = True
+                if suma_aux != objeto.distancia:
+                    return "La direccion ingresada no es válida"
+
+
+        if flag1 == True and flag2 == True: ## la calle es doble mano
+            
+            mapa[node.nombre] = node # agregamos una nueva ubicacion en el mapa
+
+            self.insert(mapa, node , v1 , v2) # Insertamos en la ubicacion las esquinas adyacentes y las distancias
+
+            # Insertamos en las esquinas la nueva adyacencia
+            aux = Node(node.nombre, tupla_x[1]) 
+            mapa[v1].list.append(aux) 
+            aux = Node(node.nombre, tupla_y[1]) 
+            mapa[v2].list.append(aux)
+            
+        elif flag1 == True:     #La calle va de v2 a v1
+            mapa[node.nombre] = node 
+            self.insert(mapa , node , v1 , None)
+
+            aux = Node(node.nombre , tupla_y[1])
+            mapa[v2].list.append(aux)
+        else:                   #La calle va de v1 a v2
+            mapa[node.nombre] = node 
+            self.insert(mapa , node , None , v2)
+
+            aux = Node(node.nombre , tupla_x[1])
+            mapa[v1].list.append(aux)
 
 
