@@ -55,8 +55,8 @@ mapa.insert_fixed(new_map, "H2", [(2, 30), (3, 40)]) #Calle en un sentido
 print(mapa.insert_fixed(new_map, "H3", [(2, 30), (3, 60)])) #Ingreso una direccion no válida
 mapa.insert_movile(new_map, "P1", [(1, 15), (2, 15)], 150)
 print(mapa.insert_movile(new_map, "P1", [(4, 10), (2, 10)], 600))
+print(mapa.doble_sentido(new_map , "P1"))
 
-
-#print("hola")
+print("hola")
 
 

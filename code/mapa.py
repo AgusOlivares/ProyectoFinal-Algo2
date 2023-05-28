@@ -2,20 +2,23 @@ class MapNode:
     def __init__(self , key = None , aristas = None , distancia = None):
         self.key = key
         self.list = []    #Esta lista sirve para poner sus nodos adyacentes
-        self.connections = aristas
-        self.distancia = distancia
+        self.peso_minimo = float("inf")
+        self.padre = None
 
 class Node: # clase creada para ser insertada a la lista de adyacencia
     def __init__(self , key = None, distancia = None):
         self.key = key
         self.distancia = distancia
+        self.peso_minimo = float("inf")     ##VERIFICAR SI ES NECESARIA ESTA PARTE
+        self.padre = None
 
 class Ubicacion: # Nodo que representa una ubicacion fija
     def __init__(self, nombre, direccion):
         self.nombre = nombre
         self.direccion = direccion # forma direccion lista con 2 tuplas (<ex, d>, <ey, d>)
         self.list = []
-        
+        self.peso_minimo = float("inf")
+        self.padre = None
 
 class Movil(Ubicacion): # Nodo que representa una Persona o un Auto
     def __init__(self, nombre, direccion, monto):
@@ -35,6 +38,8 @@ class Map:
             dict[pos] = MapNode(pos)
 
         dict = self.connections(dict , aristas)
+        dict["vertices"] = vertices
+        dict["aristas"] = aristas
         return dict
     
     def insert(self, mapa, nodo, esquina_x , esquina_y): # Inserta nodo individual
@@ -177,5 +182,29 @@ class Map:
 
             aux = Node(node.nombre , tupla_x[1])
             mapa[v1].list.append(aux)
+
+    def doble_sentido(self , mapa , nombre_persona):
+        persona = mapa[nombre_persona]
+        esquina1 = persona.direccion[0][0]
+        esquina2 = persona.direccion[1][0]
+
+        #Listas de adyacencia de las esquinas
+        adyacentes_1 = mapa[esquina1].list 
+        adyacentes_2 = mapa[esquina2].list
+
+        flag1 = False
+        flag2 = False
+
+        for nodo in adyacentes_1:
+            if nodo.key == esquina2:
+                flag1 = True #Dentro de la esquina 1 se encuentra la esquina 2
+
+        for nodo in adyacentes_2:
+            if nodo.key == esquina1:
+                flag2 = True #Dentro de la esquina 2 se encuentra la esquina 1
+
+        if flag1 == True and flag2 == True: #Si la calle es doble sentido entonces retorna true
+            return True
+
 
 
