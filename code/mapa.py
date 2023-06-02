@@ -2,23 +2,22 @@ class MapNode:
     def __init__(self , key = None , aristas = None , distancia = None):
         self.key = key
         self.list = []    #Esta lista sirve para poner sus nodos adyacentes
-        self.peso_minimo = float("inf")
+        self.peso_minimo = None
         self.padre = None
+        self.dijkstra = {}
+
 
 class Node: # clase creada para ser insertada a la lista de adyacencia
     def __init__(self , key = None, distancia = None):
         self.key = key
         self.distancia = distancia
-        self.peso_minimo = float("inf")     ##VERIFICAR SI ES NECESARIA ESTA PARTE
-        self.padre = None
+        
 
 class Ubicacion: # Nodo que representa una ubicacion fija
     def __init__(self, nombre, direccion):
         self.nombre = nombre
         self.direccion = direccion # forma direccion lista con 2 tuplas (<ex, d>, <ey, d>)
         self.list = []
-        self.peso_minimo = float("inf")
-        self.padre = None
 
 class Movil(Ubicacion): # Nodo que representa una Persona o un Auto
     def __init__(self, nombre, direccion, monto):
@@ -205,6 +204,30 @@ class Map:
 
         if flag1 == True and flag2 == True: #Si la calle es doble sentido entonces retorna true
             return True
+
+
+    def initRelax(self, map, nodo_inicial): # Funcion para relajar cada MapNode (esquinas)
+
+        for esquina in map:
+            if esquina != nodo_inicial:
+                map[esquina].peso_minimo = float('inf')
+                map[esquina].padre = None
+            else:
+                map[nodo_inicial].peso_minimo = 0
+
+
+
+        return map
+    
+    def Relax(self, esquina1, esquina2): # Funcion que actualiza el peso_minimo de cada nodo, excepto el de partida
+
+        if esquina2.peso_minimo > (esquina1.peso_minimo + (esquina2.distancia)):
+            esquina2.peso_minimo = esquina1.peso_minimo + (esquina2.distancia)
+            esquina2.padre = esquina1
+
+    
+
+
 
 
 
