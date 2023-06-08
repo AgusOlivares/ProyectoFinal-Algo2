@@ -7,10 +7,11 @@ class MapNode:
         self.dijkstra = {}
 
 
-class Node: # clase creada para ser insertada a la lista de adyacencia
+class Node(MapNode): # clase creada para ser insertada a la lista de adyacencia
     def __init__(self , key = None, distancia = None):
         self.key = key
         self.distancia = distancia
+
         
 
 class Ubicacion: # Nodo que representa una ubicacion fija
@@ -37,8 +38,8 @@ class Map:
             dict[pos] = MapNode(pos)
 
         dict = self.connections(dict , aristas)
-        dict["vertices"] = vertices
-        dict["aristas"] = aristas
+        #dict["vertices"] = vertices
+        #dict["aristas"] = aristas
         return dict
     
     def insert(self, mapa, nodo, esquina_x , esquina_y): # Inserta nodo individual
@@ -209,25 +210,40 @@ class Map:
     def initRelax(self, map, nodo_inicial): # Funcion para relajar cada MapNode (esquinas)
 
         for esquina in map:
-            if esquina != nodo_inicial:
+            if esquina != nodo_inicial.key:
                 map[esquina].peso_minimo = float('inf')
                 map[esquina].padre = None
             else:
-                map[nodo_inicial].peso_minimo = 0
-
-
-
+                map[nodo_inicial.key].peso_minimo = 0
         return map
     
-    def Relax(self, esquina1, esquina2): # Funcion que actualiza el peso_minimo de cada nodo, excepto el de partida
+    def Relax(self, esquina1, esquina2 , distancia_e2): # Funcion que actualiza el peso_minimo de cada nodo, excepto el de partida
+        #Esquina 1 y esquina 2 son del tipo MapNode y distancia_e2 es la distancia entre la e1 a la e2
 
-        if esquina2.peso_minimo > (esquina1.peso_minimo + (esquina2.distancia)):
-            esquina2.peso_minimo = esquina1.peso_minimo + (esquina2.distancia)
-            esquina2.padre = esquina1
+        if esquina2.peso_minimo > (esquina1.peso_minimo + distancia_e2):
+            esquina2.peso_minimo = esquina1.peso_minimo + distancia_e2
+            esquina2.padre = esquina1.key
 
-    
+    def Dijkstra(self , mapa , esquina_inicial):
 
+        self.initRelax(mapa , esquina_inicial)
+        visited = set()
+        lista_pesos = []
+        for key in mapa:
+            lista_pesos.append(mapa[key]) #LLeno una lista de MapNode (las esquinas)
 
+        lista_pesos = sorted(lista_pesos , key= lambda x: x.peso_minimo)
+        
+        while len(lista_pesos) > 0:
+
+            current_node = lista_pesos.pop(0) #MapNode
+            visited.add(current_node) #Añadimos la esquina visitada
+
+            for adyacente in current_node.list:
+                aux = mapa[adyacente.key] #Hago esto para utilizar un MapNode en lugar de un Node de la lista de adyacencia
+                if aux not in visited:
+                    self.Relax(current_node , aux , adyacente.distancia) #Pasamos de parametro dos MapNode y la distancia entre ellos
+            lista_pesos = sorted(lista_pesos , key= lambda x: x.peso_minimo) #Ordeno los nodos de la lista segun los pesos minimos 
 
 
 
