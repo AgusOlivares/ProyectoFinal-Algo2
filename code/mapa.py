@@ -69,7 +69,7 @@ class Map:
     def insert_fixed(self, mapa, nombre, direccion):
 
         if nombre in mapa:
-            return "El nombre de la ubicacion ya existe"
+            return print("El nombre de la ubicacion ya existe, no sera agregado")
 
         suma_aux = direccion[0][1] + direccion[1][1]
 
@@ -88,7 +88,7 @@ class Map:
             if objeto.key == v1:
                 flag1 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         #La calle va de v1 a v2
@@ -96,7 +96,7 @@ class Map:
             if objeto.key == v2:
                 flag2 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         if flag1 == True and flag2 == True: ## la calle es doble mano
@@ -128,7 +128,7 @@ class Map:
     def insert_movile(self, mapa, nombre, direccion, monto):
 
         if nombre in mapa:
-            return "El nombre de la ubicacion ya existe" #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
+            return print("El nombre de la ubicacion ya existe") #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
 
         suma_aux = direccion[0][1] + direccion[1][1]
 
@@ -147,7 +147,7 @@ class Map:
             if objeto.key == v1:
                 flag1 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         #La calle va de v1 a v2
@@ -155,7 +155,7 @@ class Map:
             if objeto.key == v2:
                 flag2 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         if flag1 == True and flag2 == True: ## la calle es doble mano
