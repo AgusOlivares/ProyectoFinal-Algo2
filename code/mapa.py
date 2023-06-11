@@ -1,3 +1,4 @@
+import copy
 class MapNode:
     def __init__(self , key = None , aristas = None , distancia = None):
         self.key = key
@@ -224,26 +225,36 @@ class Map:
             esquina2.peso_minimo = esquina1.peso_minimo + distancia_e2
             esquina2.padre = esquina1.key
 
-    def Dijkstra(self , mapa , esquina_inicial):
-
-        self.initRelax(mapa , esquina_inicial)
+    def Dijkstra(self, mapa, esquina_inicial):
+        new_map = copy.deepcopy(mapa)  #Se crea una copia profunda de mapa, lo que garantiza que todos los objetos y estructuras de datos internos se copien correctamente sin compartir referencias
+        self.initRelax(new_map, esquina_inicial)
         visited = set()
         lista_pesos = []
-        for key in mapa:
-            lista_pesos.append(mapa[key]) #LLeno una lista de MapNode (las esquinas)
+        for key in new_map:
+            lista_pesos.append(new_map[key])
 
-        lista_pesos = sorted(lista_pesos , key= lambda x: x.peso_minimo)
-        
+        lista_pesos = sorted(lista_pesos, key=lambda x: x.peso_minimo)
+
         while len(lista_pesos) > 0:
-
-            current_node = lista_pesos.pop(0) #MapNode
-            visited.add(current_node) #Añadimos la esquina visitada
+            current_node = lista_pesos.pop(0)
+            visited.add(current_node)
 
             for adyacente in current_node.list:
-                aux = mapa[adyacente.key] #Hago esto para utilizar un MapNode en lugar de un Node de la lista de adyacencia
+                aux = new_map[adyacente.key]
                 if aux not in visited:
-                    self.Relax(current_node , aux , adyacente.distancia) #Pasamos de parametro dos MapNode y la distancia entre ellos
-            lista_pesos = sorted(lista_pesos , key= lambda x: x.peso_minimo) #Ordeno los nodos de la lista segun los pesos minimos 
+                    self.Relax(current_node, aux, adyacente.distancia)
 
+            lista_pesos = sorted(lista_pesos, key=lambda x: x.peso_minimo)
 
+        return new_map
+        
 
+    def dijkstraInNodes(self, mapa):
+        new_mapa = {}  # Crear un nuevo diccionario para almacenar los resultados
+
+        for key in mapa:
+            current_map = mapa.copy()  # Crear una copia independiente del mapa en cada iteración
+            current_map[key].dijkstra = self.Dijkstra(current_map, current_map[key])
+            new_mapa[key] = current_map  # Guardar el resultado en el nuevo diccionario
+
+        return new_mapa

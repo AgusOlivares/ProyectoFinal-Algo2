@@ -100,19 +100,19 @@ print(V)
 print(A)
 mapa = m.Map(V , A)
 new_map = mapa.createMap(V , A)
-print(mapa.Dijkstra(new_map, new_map["s"]))
+#print(mapa.Dijkstra(new_map, new_map["s"]))
+print(mapa.dijkstraInNodes(new_map))
 serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 
-"""
-mapa.insert_fixed(new_map, "H1", [(1, 15), (2, 15)]) #Calle en doble sentido
-mapa.insert_fixed(new_map, "H2", [(2, 30), (3, 40)]) #Calle en un sentido
-print(mapa.insert_fixed(new_map, "H3", [(2, 30), (3, 60)])) #Ingreso una direccion no válida
-mapa.insert_movile(new_map, "P1", [(1, 15), (2, 15)], 150)
-print(mapa.insert_movile(new_map, "P1", [(4, 10), (2, 10)], 600))
-print(mapa.doble_sentido(new_map , "P1"))
 
+mapa.insert_fixed(new_map, "H1", [("s", 5), ("t", 5)]) #Calle en un sentido 
+mapa.insert_fixed(new_map, "H2", [("t", 1), ("y", 2)]) #Calle en doble sentido pero con distintas distancias entre las calles
+print(mapa.insert_fixed(new_map, "H3", [("s", 4), ("t", 10)])) #Ingreso una direccion no válida
+mapa.insert_movile(new_map, "P1", [("y", 1), ("z", 1)], 150) #Ingreso un nodo movil 
+print(mapa.insert_movile(new_map, "P1", [("y", 5), ("x", 4)], 600)) #Ingreso un nodo movil con un nombre que ya existe
 print("hola")
-"""
+
+
 
 
