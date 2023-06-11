@@ -34,9 +34,14 @@ class Map:
     def createMap(self , vertices, aristas):
         dict = {}
         #Agrego las esquinas
-        for key in range(len(vertices)):
-            pos = vertices[key]
-            dict[pos] = MapNode(pos)
+        #Oficial
+        #for key in range(len(vertices)):
+        #    pos = vertices[key]
+        #    dict[pos] = MapNode(pos)
+
+        #Modificacion
+        for key in vertices:
+            dict[key] = MapNode(key)
 
         dict = self.connections(dict , aristas)
         #dict["vertices"] = vertices
@@ -58,19 +63,29 @@ class Map:
 
     def connections(self , dict , aristas):
 
-        for (v1 , v2 , c) in aristas:
+        for (v1 , v2 , c) in aristas: # c es el peso de la arista
             if v1 != v2:
-                node = Node(v2, c)
+                # Oficial
+                #node = Node(v2, c)
+
+                #Modificacion
+                node = Node(v2, int(c))
+
                 dict[v1].list.append(node)
             else: #Preguntar si hace falta un nodo conectado con sigo mismo
-                node = Node(v1, c)
+                # Oficial
+                #node = Node(v1, c)
+
+                # Modificacion
+                node = Node(v1, int(c))
+
                 dict[v1].list.append(node)
         return dict
     
     def insert_fixed(self, mapa, nombre, direccion):
 
         if nombre in mapa:
-            return "El nombre de la ubicacion ya existe"
+            return print("El nombre de la ubicacion ya existe, no sera agregado")
 
         suma_aux = direccion[0][1] + direccion[1][1]
 
@@ -89,7 +104,7 @@ class Map:
             if objeto.key == v1:
                 flag1 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         #La calle va de v1 a v2
@@ -97,7 +112,7 @@ class Map:
             if objeto.key == v2:
                 flag2 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         if flag1 == True and flag2 == True: ## la calle es doble mano
@@ -129,7 +144,7 @@ class Map:
     def insert_movile(self, mapa, nombre, direccion, monto):
 
         if nombre in mapa:
-            return "El nombre de la ubicacion ya existe" #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
+            return print("El nombre de la ubicacion ya existe") #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
 
         suma_aux = direccion[0][1] + direccion[1][1]
 
@@ -148,7 +163,7 @@ class Map:
             if objeto.key == v1:
                 flag1 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         #La calle va de v1 a v2
@@ -156,7 +171,7 @@ class Map:
             if objeto.key == v2:
                 flag2 = True
                 if suma_aux != objeto.distancia:
-                    return "La direccion ingresada no es válida"
+                    return print("La direccion ingresada no es válida")
 
 
         if flag1 == True and flag2 == True: ## la calle es doble mano
