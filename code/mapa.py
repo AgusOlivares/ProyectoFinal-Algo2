@@ -33,9 +33,14 @@ class Map:
     def createMap(self , vertices, aristas):
         dict = {}
         #Agrego las esquinas
-        for key in range(len(vertices)):
-            pos = vertices[key]
-            dict[pos] = MapNode(pos)
+        #Oficial
+        #for key in range(len(vertices)):
+        #    pos = vertices[key]
+        #    dict[pos] = MapNode(pos)
+
+        #Modificacion
+        for key in vertices:
+            dict[key] = MapNode(key)
 
         dict = self.connections(dict , aristas)
         #dict["vertices"] = vertices
@@ -57,12 +62,22 @@ class Map:
 
     def connections(self , dict , aristas):
 
-        for (v1 , v2 , c) in aristas:
+        for (v1 , v2 , c) in aristas: # c es el peso de la arista
             if v1 != v2:
-                node = Node(v2, c)
+                # Oficial
+                #node = Node(v2, c)
+
+                #Modificacion
+                node = Node(v2, int(c))
+
                 dict[v1].list.append(node)
             else: #Preguntar si hace falta un nodo conectado con sigo mismo
-                node = Node(v1, c)
+                # Oficial
+                #node = Node(v1, c)
+
+                # Modificacion
+                node = Node(v1, int(c))
+
                 dict[v1].list.append(node)
         return dict
     
