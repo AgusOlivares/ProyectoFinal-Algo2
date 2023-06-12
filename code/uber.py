@@ -60,9 +60,14 @@ if args.create_map:
     mapa = m.Map(V , A)
     new_map = mapa.createMap(V , A) # Mapa con nodos y aristas
     #print(new_map)
-    
+    mapa.dijkstraInNodes(new_map) #Calculo Dijkstra para cada MapNode 
+    print("--"*10)
+
+    new_map["autos"] = [] ### Creo una lista para llevar el registro de los autos que se van a ingresar
+
     serializar_archivo(new_map)
     print("Map created succesfully") #esto solo se hacia para verificar funcionalidad
+
 
 if args.load_fix_element:
 
@@ -111,6 +116,9 @@ if args.load_movil_element:
         direccion.append((esquina.strip(), int(distancia.strip())))
 
     mapa.insert_movile(new_map, nombre, direccion, monto) 
+
+    if nombre[0] == "C":
+        new_map["autos"].append(nombre) ### Esto lo agregue para tener un registro de los autos que creamos
 
     serializar_archivo(new_map)
 
@@ -181,20 +189,20 @@ serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 '''
 
-#V, A = leer_archivo("mapa.txt") 
-#print(V)
-#print(A)
-#mapa = m.Map(V , A)
-#new_map = mapa.createMap(V , A)
-#print(mapa.Dijkstra(new_map, new_map["e1"]))
-#serializar_archivo(new_map)
+#Codigo para probar Dijkstra en cada nodo
+'''
+V, A = leer_archivo("mapa-ejemplo.txt") 
+print(V)
+print(A)
+mapa = m.Map(V , A)
+new_map = mapa.createMap(V , A)
+print(mapa.Dijkstra(new_map, new_map["e1"]))
+serializar_archivo(new_map)
+
+'''
+#A partir del mapa de prueba cargado voy a trabajar para implementar el create_trip (No contiene los nodos fijos y moviles todavia)
 aux = hacer_lectura("serializado.txt")
-
-
-mapa.insert_fixed(new_map, "H1", [("s", 5), ("t", 5)]) #Calle en un sentido 
-mapa.insert_fixed(new_map, "H2", [("t", 1), ("y", 2)]) #Calle en doble sentido pero con distintas distancias entre las calles
-print(mapa.insert_fixed(new_map, "H3", [("s", 4), ("t", 10)])) #Ingreso una direccion no válida
-mapa.insert_movile(new_map, "P1", [("y", 1), ("z", 1)], 150) #Ingreso un nodo movil 
-print(mapa.insert_movile(new_map, "P1", [("y", 5), ("x", 4)], 600)) #Ingreso un nodo movil con un nombre que ya existe
-print("hola")
+mapa = m.Map()
+mapa.ranking_autos(aux , "P1" , "H1")
+print("--"*10)
 
