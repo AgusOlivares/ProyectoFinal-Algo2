@@ -316,14 +316,15 @@ class Map:
         del camino mas corto hasta la esquina de la persona
         """
         #Si esta en una calle doble sentido utilizo esquina_inicial_dijkstra_1 y esquina_inicial_dijkstra_2 , sino solo utilizo esquina_inicial_dijkstra
-        esquina_inicial_dijkstra = None  
-        esquina_inicial_dijkstra_1 = None
-        esquina_inicial_dijkstra_2 = None
 
         lista_autos = mapa["autos"]
         lista_ranking = []
         
         for auto in lista_autos:
+
+            esquina_inicial_dijkstra = None  
+            esquina_inicial_dijkstra_1 = None
+            esquina_inicial_dijkstra_2 = None
 
             direccion_auto = mapa[auto].direccion
             esquina_1_auto = direccion_auto[0][0]
@@ -404,8 +405,10 @@ class Map:
                     lista_ranking.append(nodo_aux)  
 
             else:
+
+                ###### Revisar Todos los casos (Nodos Adyacentes iguales)
                 
-                # Voy a tener 2 nodos iniciales y 2 destinos
+                # Voy a tener 2 nodos iniciales y 2 destinos  
                 lista_menores = []
                 distancia_camino_1 = mapa[esquina_inicial_dijkstra_1].dijkstra[esquina_persona_1].peso_minimo
                 distancia_camino_2 = mapa[esquina_inicial_dijkstra_1].dijkstra[esquina_persona_2].peso_minimo
@@ -417,12 +420,12 @@ class Map:
                 
                 for elemento in mapa[esquina_persona_1].list:
                     if elemento.key == persona:
-                        distancia_total_1 = elemento.distancia + distancia_camino_1 + distancia_auto_1
-                        distancia_total_2 = elemento.distancia + distancia_camino_3 + distancia_auto_2
+                        distancia_total_1 = elemento.distancia + distancia_camino_1 + distancia_auto_1 
+                        distancia_total_3 = -elemento.distancia + distancia_camino_3 + distancia_auto_2
 
                 for elemento in mapa[esquina_persona_2].list:
                     if elemento.key == persona:
-                        distancia_total_3 = elemento.distancia + distancia_camino_2 + distancia_auto_1
+                        distancia_total_2 = elemento.distancia + distancia_camino_2 - distancia_auto_1
                         distancia_total_4 = elemento.distancia + distancia_camino_4 + distancia_auto_2
                 
                 lista_menores.append(distancia_total_1)
@@ -431,6 +434,7 @@ class Map:
                 lista_menores.append(distancia_total_4)
 
                 nodo_aux = NodoRanking(auto , min(lista_menores))
+                lista_ranking.append(nodo_aux)
             
         lista_ranking = sorted(lista_ranking, key=lambda x: x.distancia_viaje)
         print("X")

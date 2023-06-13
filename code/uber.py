@@ -203,6 +203,6 @@ serializar_archivo(new_map)
 #A partir del mapa de prueba cargado voy a trabajar para implementar el create_trip (No contiene los nodos fijos y moviles todavia)
 aux = hacer_lectura("serializado.txt")
 mapa = m.Map()
-mapa.ranking_autos(aux , "P1" , "H1")
+mapa.ranking_autos(aux , "P3" , "H1")
 print("--"*10)
 
