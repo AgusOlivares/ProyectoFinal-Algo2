@@ -39,18 +39,12 @@ class Map:
     def createMap(self , vertices, aristas):
         dict = {}
         #Agrego las esquinas
-        #Oficial
-        #for key in range(len(vertices)):
-        #    pos = vertices[key]
-        #    dict[pos] = MapNode(pos)
 
-        #Modificacion
         for key in vertices:
             dict[key] = MapNode(key)
 
         dict = self.connections(dict , aristas)
-        #dict["vertices"] = vertices
-        #dict["aristas"] = aristas
+
         return dict
     
     def insert(self, mapa, nodo, esquina_x , esquina_y): # Inserta nodo individual
@@ -63,25 +57,43 @@ class Map:
             v2_node = Node(esquina_y, nodo.direccion[1][1])
             mapa[nodo.nombre].list.append(v2_node)
     
-    # def delete(self, mapa, nodo) #### IMPLEMENTAR FUNCION DELETE PARA MOVILIZAR LOS NODOS (CREATE-TRIP)
+    def delete(self, mapa, elemento): #### IMPLEMENTAR FUNCION DELETE PARA MOVILIZAR LOS NODOS (CREATE-TRIP)
+
+        # en caso de una direccion se iba a crear e insertar un NodoViaje que va a tener su propia key
+        
+        if elemento in mapa:
+            nodo = mapa[elemento]
+        else:
+            return "El elemento no existe"
+        
+        esquina_1 = nodo.direccion[0][0]
+        esquina_2 = nodo.direccion[1][0]
+
+        #elimino al nodo  de la lista de adyacencia de la primera esquina
+        for adyacente in mapa[esquina_1].list:  
+            if adyacente.key == nodo.nombre: # Node tiene atributo key, mientras que los Nodos Moviles y Fijos tienen atributo nombre(key)
+                mapa[esquina_1].list.remove(adyacente)
+
+        #elimino al nodo  de la lista de adyacencia de la segunda esquina
+        for adyacente in mapa[esquina_2].list:  
+            if adyacente.key == nodo.nombre:
+                mapa[esquina_2].list.remove(adyacente)
+
+        if nodo.nombre in mapa["autos"]:
+            mapa["autos"].remove(nodo.nombre) # Si el objeto a eliminar es un auto, se elimina de la lista
+
+        del mapa[nodo.nombre]
 
 
     def connections(self , dict , aristas):
 
         for (v1 , v2 , c) in aristas: # c es el peso de la arista
             if v1 != v2:
-                # Oficial
-                #node = Node(v2, c)
-
-                #Modificacion
+                
                 node = Node(v2, int(c))
 
                 dict[v1].list.append(node)
-            else: #Preguntar si hace falta un nodo conectado con sigo mismo
-                # Oficial
-                #node = Node(v1, c)
-
-                # Modificacion
+            else: 
                 node = Node(v1, int(c))
 
                 dict[v1].list.append(node)
