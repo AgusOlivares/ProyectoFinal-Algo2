@@ -304,7 +304,9 @@ serializar_archivo(new_map)
 aux = hacer_lectura("serializado.txt")
 mapa = m.Map()
 mapa.ranking_autos(aux , "P2")
+lista = mapa.short_path(aux, "P1", "H1")
 
+print(lista)
 #mapa.delete(aux, "C1")
 print("--"*10)
 

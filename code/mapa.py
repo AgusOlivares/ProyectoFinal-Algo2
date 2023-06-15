@@ -472,6 +472,7 @@ class Map:
         esquina_1 = direccion[0][0]
         esquina_2 = direccion[1][0]
         distancia_total = direccion[0][1] + direccion[1][1]
+
         if esquina_1 not in mapa or esquina_2 not in mapa:
             return False
 
@@ -517,11 +518,12 @@ class Map:
         esquina_1_direccion = direccion[0][0]
         esquina_2_direccion = direccion[1][0]
 
-        
-        if esquina_1 == esquina_1_direccion and esquina_2 == esquina_2_direccion:
-            return (persona , ubicacion)
-            #Seria el caso donde esten en la misma calle la persona y la direccion de llegada
+        lista_recorrido = []
 
+        if esquina_1 == esquina_1_direccion and esquina_2 == esquina_2_direccion:
+            lista_recorrido.append((persona , ubicacion))
+            return lista_recorrido
+            #Seria el caso donde esten en la misma calle la persona y la direccion de llegada
 
         if self.doble_sentido(mapa , ubicacion) == False:
 
@@ -544,6 +546,11 @@ class Map:
                 if elemento.key == ubicacion:
                     distancia_total = distancia_camino + elemento.distancia + distancia_persona 
                     #Hacer funcion que devuelva el camino empezando en mapa[esquina_persona].dijkstra hasta esquina_final_dijkstra
+                    lista_recorrido = self.recorrido(mapa[esquina_persona].dijkstra, esquina_final_dijkstra, [])
+                    lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
+                    break
+            
+            return lista_recorrido
         
         elif esquina_final_dijkstra == None and esquina_persona != None:
             
@@ -621,5 +628,27 @@ class Map:
             # hacer funcion recursiva desde mapa[caminoMasCorto[0]].dijkstra hasta caminoMasCorto[1]
 
 
-            
-            
+    def recorrido(self, mapa_dijkstra, esquina_destino, lista):
+
+        aux = mapa_dijkstra[esquina_destino] # Guardamos la esquina en un nodo auxiliar
+
+        if aux.padre != None:
+            lista.insert(0, aux.key)
+            self.recorrido(mapa_dijkstra, aux.padre, lista)
+        else:
+            lista.insert(0, aux.key)
+            return lista
+        return lista
+    
+    def hacer_tupla(self, persona, lista, lugar):
+        nuevaLista = []
+        for i in range(len(lista)):
+            if i==0:
+                nuevaLista.append((persona,lista[i]))
+            if i == len(lista)-1:
+                nuevaLista.append((lista[i], lugar))
+                break
+            nuevaLista.append((lista[i], lista[i+1]))
+        return nuevaLista
+                                
+
