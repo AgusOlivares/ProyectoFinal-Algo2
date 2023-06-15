@@ -60,7 +60,7 @@ parser.add_argument('-create_map', type=str, metavar='archivo.txt', help='Carga 
 parser.add_argument('-load_fix_element', nargs=2, metavar=("nombre", "<direccion>"), help='Carga un elemento fijo')
 parser.add_argument('-load_movil_element', nargs=3, metavar=("nombre", "<direccion>", "monto"), help='Funcion para insertar autos o personas al mapa')
 parser.add_argument('-consult', type=str, metavar='Ubicacion/Auto/Persona', help='Busco la direccion del objeto de interes')
-parser.add_argument("-create_trip", type=None, nargs=2, metavar='Persona Lugar/<Direccion>', help='Creo un viaje para la persona con los autos que puede pagar')
+parser.add_argument("-create_trip", nargs=2, metavar='Persona Lugar/<Direccion>', help='Creo un viaje para la persona con los autos que puede pagar')
 args = parser.parse_args()
 
 
@@ -81,7 +81,6 @@ if args.create_map:
 
 if args.load_fix_element:
 
-
     
     mapa = m.Map() # Creo esto para poder utilizar las funciones
 
@@ -99,7 +98,9 @@ if args.load_fix_element:
     mapa.insert_fixed(new_map, nombre, direccion) 
     serializar_archivo(new_map)
 
-    print(new_map)
+    #print(new_map)
+    print('fix object inserted succesfully')
+
 
 if args.load_movil_element:
 
@@ -126,7 +127,8 @@ if args.load_movil_element:
 
     serializar_archivo(new_map)
 
-    print(new_map)
+    #print(new_map)
+    print('movile object inserted succesfully')
 
 if args.consult:
     
@@ -135,7 +137,8 @@ if args.consult:
     if args.consult in new_map:
         print(new_map[args.consult].direccion)
     else:
-        print("El objeto no existe")
+        print("El elemento no existe")
+        parser.error("El elemento no existe")
 
 if args.create_trip:
      
@@ -144,8 +147,9 @@ if args.create_trip:
     persona = args.create_trip[0]
 
     if persona not in new_map:
-        #return "La persona no existe"
-        pass
+        parser.error("La persona no existe")
+        
+    mapa = m.Map() # Creo esto para poder utilizar las funciones
 
     listado_de_ubicaciones = ["H","A","T","S","E","K","I"] # Posibles valores de ubicaciones, no necesariamente existentes
 
@@ -163,12 +167,13 @@ if args.create_trip:
 
             if destino_final not in new_map:
                 parser.error("El destino indicado no existe")
-                
+            # Creo que seria mejor desempaquetar la direccion del objeto en vez de crear un nodo viaje
+            # ya que cuando creemos los nuevos objetos se va a hacer en una <direccion>
             ubicacion_flag = True
             break
     else:
         if ubicacion_flag == False:
-            ## Aca determino el destino de tipo <Direccion>
+            ## Aca determino el destino de tipo <Direccion> y lo devuelvo en forma [(e1, d),(e2, d)]
             destino_final = []
             
             for elementos in destino.split():
@@ -178,17 +183,21 @@ if args.create_trip:
         else:
             parser.error("El destino indicado no existe")
             
+    # Queria crear un nodo viaje para referenciar el lugar del viaje a <direccion> pero eso no tiene sentido ya que cuando cree los objetos en el mapa,
+    # yo voy a pasar el nombre, <direccion> y monto, creo que al contrario deberia desempaquetar la direccion en caso de que el destino sea un fix_node
 
+    
+    if type(destino_final) != list:
+        destino_final = mapa[destino_final].direccion
 
     ## (RESUELTO) Reviso si el destino existe (Podria hacer una funcion que busque si existe la arista y si la distancia es correcta)
     ## (RESUELTO) Si no es correcta 'return "La direccion no existe" '
     ## (RESUELTO) Si es correcta pero no hay ningun marcador en el mapa
     ## mapa.insert_fixed(new_mapa, Nodo_temporal, destino)
 
-    mapa = m.Map()
 
     # clear_terminal() # hago clear de la terminal(Ver si utilizo esto)
-    mapa.ranking_autos(new_map, persona, destino_final)
+    mapa.ranking_autos(new_map, persona)
     ## Devuelvo el ranking de los autos que puede pagar la persona
 
     Opcion_cliente = input("Acepta el viaje? Y/N: ")
@@ -202,9 +211,22 @@ if args.create_trip:
         Opcion_cliente = input("Acepta el viaje? Y/N (E para cancelar viaje)")
 
     if Opcion_cliente == "Y":
-        # Aux_persona = 
-        # Aux_auto = 
-        # Delete_Nodes
+        # menu para selecionar auto:
+            # lista_index = [1, 2, 3]
+            # printeo de alguna forma conjunta los index y los elementos de la lista de autos
+            # input_cliente = input('seleccione un auto')
+            # Selecciono el numero del auto que quiero utilizar
+            # while input
+        # Aux_auto = lista_ranking[auto_elegido].auto
+        # monto_auto = mapa[aux_auto].monto
+        # monto_nuevo_P = mapa[persona].monto - lista[auto_elegido].precio_viaje
+        # Delete_Nodes(new_mapa, persona)
+        # Delete_Nodes(new_mapa, aux_auto)
+        # insert_fixed(new_mapa, persona, destino_final, monto_nuevo_P)
+        # insert_fixed(new_mapa, aux_auto, destino_final, monto_auto)
+        # serializar_archivo(new_map)
+     
+
         pass
     elif Opcion_cliente == "N":
         pass
@@ -212,8 +234,6 @@ if args.create_trip:
         pass
     else:
         parser.error("La opcion seleccionada no se encuentra, por favor reiniciar el viaje")
-
-
 
 
 '''
