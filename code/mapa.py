@@ -27,9 +27,10 @@ class Movil(Ubicacion): # Nodo que representa una Persona o un Auto
         self.monto = monto
         
 class NodoRanking:
-    def __init__(self , auto , distancia_viaje):
+    def __init__(self , auto , distancia_viaje , monto_auto):
         self.auto = auto
         self.distancia_viaje = distancia_viaje
+        self.precio_viaje = (distancia_viaje + int(monto_auto))/4
 
 class Map:
     def __init__(self , vertices = None , aristas = None):
@@ -293,11 +294,11 @@ class Map:
 
         return new_mapa
     
-    def ranking_autos(self , mapa , persona , lugar):
+    def ranking_autos(self , mapa , persona):
 
         #Por ahora solo va a tener el caso donde pase una persona y una ubicacion fija
 
-        if persona not in mapa or lugar not in mapa:
+        if persona not in mapa:
             return "Los datos ingresados no son válidos"
         
         direccion_persona = mapa[persona].direccion
@@ -344,6 +345,17 @@ class Map:
 
             if esquina_1_auto not in mapa or esquina_2_auto not in mapa:
                 return "Datos invalidos"
+            
+            if esquina_1 == esquina_1_auto and esquina_2 == esquina_2_auto:
+                for adyacente in mapa[esquina_1].list:
+                    if adyacente.key == auto:
+                        aux = adyacente.distancia
+                    elif adyacente.key == persona:
+                        aux2 = adyacente.distancia
+                nodo_aux = NodoRanking(auto , abs(aux-aux2), mapa[auto].monto)
+                lista_ranking.append(nodo_aux)
+                continue
+
 
             if self.doble_sentido(mapa , auto) == False:
 
@@ -365,7 +377,7 @@ class Map:
                 for elemento in mapa[esquina_persona].list: #Busco la persona dentro de la lista de adyacencia de la esquina 
                     if elemento.key == persona:
                         distancia_total = distancia_camino + elemento.distancia + distancia_auto #Sumo la distancia de el auto-esquina , esquina-persona y esquina_auto-esquina_persona
-                        nodo_aux = NodoRanking(auto , distancia_total)
+                        nodo_aux = NodoRanking(auto , distancia_total, mapa[auto].monto)
                         lista_ranking.append(nodo_aux)
             
             elif esquina_inicial_dijkstra == None and esquina_persona != None:
@@ -387,10 +399,10 @@ class Map:
                         distancia_total_2 = distancia_camino_2 + elemento.distancia + distancia_auto_2 #Sumo la distancia de el auto-esquina , esquina-persona y esquina_auto-esquina_persona
                 
                 if distancia_total_1 <= distancia_total_2:
-                    nodo_aux = NodoRanking(auto , distancia_total_1)
+                    nodo_aux = NodoRanking(auto , distancia_total_1, mapa[auto].monto)
                     lista_ranking.append(nodo_aux)
                 else:
-                    nodo_aux = NodoRanking(auto , distancia_total_2)
+                    nodo_aux = NodoRanking(auto , distancia_total_2, mapa[auto].monto)
                     lista_ranking.append(nodo_aux)                   
 
             elif esquina_inicial_dijkstra != None and esquina_persona == None:
@@ -410,44 +422,147 @@ class Map:
                         distancia_total_2 = distancia_camino_2 + elemento.distancia + distancia_auto #Sumo la distancia de el auto-esquina , esquina-persona y esquina_auto-esquina_persona
 
                 if distancia_total_1 <= distancia_total_2:
-                    nodo_aux = NodoRanking(auto , distancia_total_1)
+                    nodo_aux = NodoRanking(auto , distancia_total_1, mapa[auto].monto)
                     lista_ranking.append(nodo_aux)
                 else:
-                    nodo_aux = NodoRanking(auto , distancia_total_2)
+                    nodo_aux = NodoRanking(auto , distancia_total_2, mapa[auto].monto)
                     lista_ranking.append(nodo_aux)  
 
             else:
+                # Revisar Todos los casos (Nodos Adyacentes iguales)
 
-                ###### Revisar Todos los casos (Nodos Adyacentes iguales)
-                
-                # Voy a tener 2 nodos iniciales y 2 destinos  
                 lista_menores = []
                 distancia_camino_1 = mapa[esquina_inicial_dijkstra_1].dijkstra[esquina_persona_1].peso_minimo
                 distancia_camino_2 = mapa[esquina_inicial_dijkstra_1].dijkstra[esquina_persona_2].peso_minimo
                 distancia_camino_3 = mapa[esquina_inicial_dijkstra_2].dijkstra[esquina_persona_1].peso_minimo
-                distancia_camino_4 = mapa[esquina_inicial_dijkstra_2].dijkstra[esquina_persona_2].peso_minimo 
+                distancia_camino_4 = mapa[esquina_inicial_dijkstra_2].dijkstra[esquina_persona_2].peso_minimo
 
                 distancia_auto_1 = mapa[auto].list[0].distancia
                 distancia_auto_2 = mapa[auto].list[1].distancia
-                
+
                 for elemento in mapa[esquina_persona_1].list:
                     if elemento.key == persona:
-                        distancia_total_1 = elemento.distancia + distancia_camino_1 + distancia_auto_1 
-                        distancia_total_3 = -elemento.distancia + distancia_camino_3 + distancia_auto_2
+                        distancia_total_1 = elemento.distancia + distancia_camino_1 + distancia_auto_1
+                        distancia_total_3 = elemento.distancia + distancia_camino_3 + distancia_auto_2
 
                 for elemento in mapa[esquina_persona_2].list:
                     if elemento.key == persona:
-                        distancia_total_2 = elemento.distancia + distancia_camino_2 - distancia_auto_1
+                        distancia_total_2 = elemento.distancia + distancia_camino_2 + distancia_auto_1
                         distancia_total_4 = elemento.distancia + distancia_camino_4 + distancia_auto_2
-                
+
                 lista_menores.append(distancia_total_1)
                 lista_menores.append(distancia_total_2)
                 lista_menores.append(distancia_total_3)
                 lista_menores.append(distancia_total_4)
 
-                nodo_aux = NodoRanking(auto , min(lista_menores))
+                nodo_aux = NodoRanking(auto, min(lista_menores) , mapa[auto].monto)
                 lista_ranking.append(nodo_aux)
-            
-        lista_ranking = sorted(lista_ranking, key=lambda x: x.distancia_viaje)
-        print("X")
 
+        lista_ranking = sorted(lista_ranking, key=lambda x: x.precio_viaje)
+        return lista_ranking
+
+    def exist_location(self, mapa , direccion):
+
+        esquina_1 = direccion[0][0]
+        esquina_2 = direccion[1][0]
+        distancia_total = direccion[0][1] + direccion[1][1]
+        if esquina_1 not in mapa or esquina_2 not in mapa:
+            return False
+
+
+        for adyacente in mapa[esquina_1].list:
+            if adyacente.key == esquina_2:
+                distancia_total = distancia_total - adyacente.distancia
+
+        return distancia_total == 0
+    
+    def short_path(self , mapa , persona , ubicacion):
+        #Ubicacion seria la key del nodo temporal que le paso
+        #La funcion hace lo mismo que ranking_autos pero no hay q iterar los autos, solo me fijo en una direccion
+        if persona not in mapa:
+            return "Los datos ingresados no son válidos"
+        
+        direccion_persona = mapa[persona].direccion
+        esquina_1 = direccion_persona[0][0]
+        esquina_2 = direccion_persona[1][0]
+
+        #Si esta en una calle doble sentido utilizo esquina_persona_1 y esquina_persona_2  , sino solo utilizo esquina_persona
+        esquina_persona = None
+        esquina_persona_1 = None #Uso dos esquinas para ver que camino es mas corto
+        esquina_persona_2 = None
+
+        if self.doble_sentido(mapa , persona) == False:
+            for adyacente in mapa[persona].list:
+                if adyacente.key == esquina_1: #Si apunta a la esquina 1 entonces me quedo con la esquina 2
+                    esquina_persona = mapa[esquina_1].key 
+                else: #Si apunta a la esquina 2 entonces me quedo con la esquina 1
+                    esquina_persona = mapa[esquina_2].key
+        else:
+            """
+            Me voy a fijar la menor distancia desde el auto hasta las esquinas
+            pero me voy a quedar con la de menor peso
+            """
+            esquina_persona_1 = mapa[esquina_1].key
+            esquina_persona_2 = mapa[esquina_2].key
+
+        
+
+        esquina_final_dijkstra = None  
+        esquina_final_dijkstra_1 = None
+        esquina_final_dijkstra_2 = None
+
+        direccion = mapa[ubicacion].direccion
+        esquina_1_direccion = direccion[0][0]
+        esquina_2_direccion = direccion[1][0]
+
+        
+        if esquina_1 == esquina_1_direccion and esquina_2 == esquina_2_direccion:
+            return (persona , ubicacion)
+            #Seria el caso donde esten en la misma calle la persona y la direccion de llegada
+
+
+        if self.doble_sentido(mapa , ubicacion) == False:
+
+            esquinas_adyacente = mapa[ubicacion].list[0] # Las esquinas adyacentes al auto
+            if esquinas_adyacente.key == esquina_1_direccion: 
+                esquina_final_dijkstra = esquina_2_direccion # Sigo el sentido de la calle y a partir de esa esquina busco la esquina de la persona
+            else:
+                esquina_final_dijkstra = esquina_1_direccion #Lo mismo de arriba
+        else:
+            esquina_final_dijkstra_1 = esquina_1_direccion # Uso las 2 esquinas como iniciales y me quedo con la que tenga menor peso para llegar a la esquina de la persona
+            esquina_final_dijkstra_2 = esquina_2_direccion
+        
+
+        #Armo el ranking dependiendo de los casos
+        if esquina_final_dijkstra != None and esquina_persona != None:
+            distancia_camino = mapa[esquina_persona].dijkstra[esquina_final_dijkstra].peso_minimo
+            distancia_persona = mapa[persona].list[0].distancia #De persona a la esquina inicial de dijkstra
+
+            for elemento in mapa[esquina_final_dijkstra].list: 
+                if elemento.key == ubicacion:
+                    distancia_total = distancia_camino + elemento.distancia + distancia_persona 
+                    #Hacer funcion que devuelva el camino empezando en esquina_final_dijkstra
+        
+        elif esquina_final_dijkstra == None and esquina_persona != None:
+            
+            distancia_camino_1 = mapa[esquina_persona].dijkstra[esquina_final_dijkstra_1].peso_minimo
+            distancia_camino_2 = mapa[esquina_persona].dijkstra[esquina_final_dijkstra_2].peso_minimo
+            distancia_persona = mapa[persona].list[0].distancia 
+
+            for elemento in mapa[esquina_final_dijkstra_1]:
+                if elemento.key == ubicacion:
+                    distancia_total_1 = distancia_persona + elemento.distancia + distancia_camino_1
+
+            for elemento in mapa[esquina_final_dijkstra_2]:
+                if elemento.key == ubicacion:
+                    distancia_total_2 = distancia_persona + elemento.distancia + distancia_camino_2
+
+            if distancia_total_1 <= distancia_camino_2:
+                #Funcion recursiva desde esquina_final_dijkstra_1
+                pass
+            else:
+                #Funcion recursiva desde esquina_final_dijkstra_2
+                pass
+        
+        elif esquina_final_dijkstra != None and esquina_persona == None:
+            pass

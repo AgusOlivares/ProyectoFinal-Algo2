@@ -180,9 +180,9 @@ if args.create_trip:
             
 
 
-    ## Reviso si el destino existe (Podria hacer una funcion que busque si existe la arista y si la distancia es correcta)
-    ## Si no es correcta 'return "La direccion no existe" '
-    ## Si es correcta pero no hay ningun marcador en el mapa
+    ## (RESUELTO) Reviso si el destino existe (Podria hacer una funcion que busque si existe la arista y si la distancia es correcta)
+    ## (RESUELTO) Si no es correcta 'return "La direccion no existe" '
+    ## (RESUELTO) Si es correcta pero no hay ningun marcador en el mapa
     ## mapa.insert_fixed(new_mapa, Nodo_temporal, destino)
 
     mapa = m.Map()
@@ -205,7 +205,6 @@ if args.create_trip:
         # Aux_persona = 
         # Aux_auto = 
         # Delete_Nodes
-         
         pass
     elif Opcion_cliente == "N":
         pass
@@ -213,7 +212,6 @@ if args.create_trip:
         pass
     else:
         parser.error("La opcion seleccionada no se encuentra, por favor reiniciar el viaje")
-           
 
 
 
@@ -285,7 +283,8 @@ serializar_archivo(new_map)
 #A partir del mapa de prueba cargado voy a trabajar para implementar el create_trip (No contiene los nodos fijos y moviles todavia)
 aux = hacer_lectura("serializado.txt")
 mapa = m.Map()
-#mapa.ranking_autos(aux , "P3" , "H1")
-mapa.delete(aux, "C1")
+mapa.ranking_autos(aux , "P2")
+
+#mapa.delete(aux, "C1")
 print("--"*10)
 
