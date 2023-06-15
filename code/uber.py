@@ -4,15 +4,6 @@ import re
 import os
 
 
-##
-def clear_terminal():
-    if os.name == "posix":  # Unix/Linux/Mac
-        os.system("clear")
-    elif os.name == "nt":  # Windows
-        os.system("cls")
-##
-
-
 def leer_archivo(archivo):
         V = []
         A = []
@@ -167,12 +158,12 @@ if args.create_trip:
 
             if destino_final not in new_map:
                 parser.error("El destino indicado no existe")
-            # Creo que seria mejor desempaquetar la direccion del objeto en vez de crear un nodo viaje
-            # ya que cuando creemos los nuevos objetos se va a hacer en una <direccion>
             ubicacion_flag = True
             break
     else:
         if ubicacion_flag == False:
+            if destino[0] == "P" or destino[0] == "C":
+                parser.error("El destino no es valido")
             ## Aca determino el destino de tipo <Direccion> y lo devuelvo en forma [(e1, d),(e2, d)]
             destino_final = []
             
@@ -183,22 +174,15 @@ if args.create_trip:
         else:
             parser.error("El destino indicado no existe")
             
-    # Queria crear un nodo viaje para referenciar el lugar del viaje a <direccion> pero eso no tiene sentido ya que cuando cree los objetos en el mapa,
-    # yo voy a pasar el nombre, <direccion> y monto, creo que al contrario deberia desempaquetar la direccion en caso de que el destino sea un fix_node
-
     
     if type(destino_final) != list:
         destino_final_direccion = new_map[destino_final].direccion
     else:
         mapa.insert_fixed(new_map , "Destino" , destino_final)
 
-    ## (RESUELTO) Reviso si el destino existe (Podria hacer una funcion que busque si existe la arista y si la distancia es correcta)
-    ## (RESUELTO) Si no es correcta 'return "La direccion no existe" '
-    ## (RESUELTO) Si es correcta pero no hay ningun marcador en el mapa
-    ## mapa.insert_fixed(new_mapa, Nodo_temporal, destino)
 
-
-    # clear_terminal() # hago clear de la terminal(Ver si utilizo esto)
+    ## Devuelvo el ranking de los autos que puede pagar la persona
+    
     ranking_autos = mapa.ranking_autos(new_map, persona)
     i=1
     for (auto,monto) in ranking_autos:
@@ -206,73 +190,46 @@ if args.create_trip:
         i +=1 
 
     auto_elegido = int(input("Indique con un numero el auto elegido: "))-1
-    ## Devuelvo el ranking de los autos que puede pagar la persona
 
     Opcion_cliente = input("Acepta el viaje? Y/N: ")
 
-    while Opcion_cliente != "Y" and Opcion_cliente != "N" and Opcion_cliente != "E":
+    while Opcion_cliente != "Y" and Opcion_cliente != "N":
 
         if Opcion_cliente != "Y" and Opcion_cliente != "N":
-            # clear_terminal() # Hago un clear (Ver bien como usar esto)
+
             print("La opcion seleccionada no es correcta")
 
-        Opcion_cliente = input("Acepta el viaje? Y/N (E para cancelar viaje)")
+        Opcion_cliente = input("Acepta el viaje? Y/N")
 
     if Opcion_cliente == "Y":
-        # menu para selecionar auto:
-            # lista_index = [1, 2, 3]
-            # printeo de alguna forma conjunta los index y los elementos de la lista de autos
-            # input_cliente = input('seleccione un auto')
-            # Selecciono el numero del auto que quiero utilizar
-            # while input
-        # Aux_auto = lista_ranking[auto_elegido].auto
-        # monto_auto = mapa[aux_auto].monto
-        # monto_nuevo_P = mapa[persona].monto - lista[auto_elegido].precio_viaje
-        # Delete_Nodes(new_mapa, persona)
-        # Delete_Nodes(new_mapa, aux_auto)
-        # insert_fixed(new_mapa, persona, destino_final, monto_nuevo_P)
-        # insert_fixed(new_mapa, aux_auto, destino_final, monto_auto)
-        # serializar_archivo(new_map)
         
-        aux_auto = ranking_autos[auto_elegido][0]
+        aux_auto = ranking_autos[auto_elegido][0] #key auto
         print(f"El auto elegido es {aux_auto}")
         monto_auto = new_map[aux_auto].monto
         monto_nuevo_persona = int(new_map[persona].monto)-ranking_autos[auto_elegido][1]
 
-        if "Destino" in new_map:
-            print(f"El recorrido del mapa es: {mapa.short_path(new_map , persona , 'Destino')}")
-            mapa.delete("Destino")
-        else:
-            print(f"El recorrido del mapa es: {mapa.short_path(new_map , persona , destino_final)}")
+        if "Destino" in new_map: # existe nodo destino, por lo que destino_final es <direccion>
+            print(f"El recorrido sobre el mapa es: {mapa.short_path(new_map , persona , 'Destino')}")
+            mapa.delete(new_map,persona)
+            mapa.delete(new_map,aux_auto)
+            mapa.insert_movile(new_map, persona, destino_final, monto_nuevo_persona)
+            mapa.insert_movile(new_map, aux_auto, destino_final, monto_auto)
+            new_map['autos'].append(aux_auto)
+            mapa.delete(new_map, "Destino")
+        else: # destino_final va a ser una key
+            print(f"El recorrido sobre el mapa es: {mapa.short_path(new_map , persona , destino_final)}")
+            mapa.delete(new_map,persona)
+            mapa.delete(new_map,aux_auto)
+            mapa.insert_movile(new_map, persona, destino_final_direccion, monto_nuevo_persona)
+            mapa.insert_movile(new_map, aux_auto, destino_final_direccion, monto_auto)
+            new_map['autos'].append(aux_auto)
 
-        mapa.delete(new_map,persona)
-        mapa.delete(new_map,aux_auto)
-        mapa.insert_movile(new_map, persona, destino_final_direccion, monto_nuevo_persona)
-        mapa.insert_movile(new_map, persona, destino_final_direccion, monto_auto)
 
         serializar_archivo(new_map)
 
-
-
-        pass
     elif Opcion_cliente == "N":
-        pass
-    elif Opcion_cliente == "E":
-        pass
+        print("El viaje ha sido cancelado")
     else:
         parser.error("La opcion seleccionada no se encuentra, por favor reiniciar el viaje")
 
-
-#A partir del mapa de prueba cargado voy a trabajar para implementar el create_trip (No contiene los nodos fijos y moviles todavia)
-aux = hacer_lectura("serializado.txt")
-print(aux)
-mapa = m.Map()
-# mapa.ranking_autos(aux , "P2")
-#lista1 = mapa.short_path(aux, "P1", "H1")
-#lista2 = mapa.short_path(aux , "P1" , "H2")
-#lista3 = mapa.short_path(aux , "P2" , "H1")
-#lista4 = mapa.short_path(aux , "P2" , "H3")
-#print(lista4)
-#mapa.delete(aux, "C1")
-print("--"*10)
 

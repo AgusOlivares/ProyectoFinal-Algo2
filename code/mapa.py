@@ -14,7 +14,6 @@ class Node(MapNode): # clase creada para ser insertada a la lista de adyacencia
         self.distancia = distancia
 
         
-
 class Ubicacion: # Nodo que representa una ubicacion fija
     def __init__(self, nombre, direccion):
         self.nombre = nombre
@@ -64,9 +63,9 @@ class Map:
             v2_node = Node(esquina_y, nodo.direccion[1][1])
             mapa[nodo.nombre].list.append(v2_node)
     
-    def delete(self, mapa, elemento): #### IMPLEMENTAR FUNCION DELETE PARA MOVILIZAR LOS NODOS (CREATE-TRIP)
+    def delete(self, mapa, elemento): 
 
-        # en caso de una direccion se iba a crear e insertar un NodoViaje que va a tener su propia key
+        # en caso de una direccion se va a crear e insertar un NodoViaje que va a tener su propia key
         
         if elemento in mapa:
             nodo = mapa[elemento]
@@ -168,7 +167,7 @@ class Map:
     def insert_movile(self, mapa, nombre, direccion, monto):
 
         if nombre in mapa:
-            return print("El nombre de la ubicacion ya existe") #### VER SI CAMBIAMOS EL MENSAJE DEVUELTO
+            return print("El nombre de la ubicacion ya existe")
 
         suma_aux = direccion[0][1] + direccion[1][1]
 
@@ -302,7 +301,6 @@ class Map:
     
     def ranking_autos(self , mapa , persona):
 
-        #Por ahora solo va a tener el caso donde pase una persona y una ubicacion fija
 
         if persona not in mapa:
             return "Los datos ingresados no son válidos"
@@ -435,7 +433,6 @@ class Map:
                     lista_ranking.append(nodo_aux)  
 
             else:
-                # Revisar Todos los casos (Nodos Adyacentes iguales)
 
                 lista_menores = []
                 distancia_camino_1 = mapa[esquina_inicial_dijkstra_1].dijkstra[esquina_persona_1].peso_minimo
@@ -490,7 +487,7 @@ class Map:
         return distancia_total == 0
     
     def short_path(self , mapa , persona , ubicacion):
-        #Ubicacion seria la key del nodo temporal que le paso
+        #Ubicacion seria la key del NodoViaje que le paso ('Destino')
         #La funcion hace lo mismo que ranking_autos pero no hay q iterar los autos, solo me fijo en una direccion
         if persona not in mapa:
             return "Los datos ingresados no son válidos"
@@ -551,7 +548,7 @@ class Map:
             for elemento in mapa[esquina_final_dijkstra].list: 
                 if elemento.key == ubicacion:
                     distancia_total = distancia_camino + elemento.distancia + distancia_persona 
-                    #Hacer funcion que devuelva el camino empezando en mapa[esquina_persona].dijkstra hasta esquina_final_dijkstra
+                    #Funcion que devuelva el camino empezando en mapa[esquina_persona].dijkstra hasta esquina_final_dijkstra
                     lista_recorrido = self.recorrido(mapa[esquina_persona].dijkstra, esquina_final_dijkstra, [])
                     lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
                     break
@@ -640,7 +637,7 @@ class Map:
             lista_camino_minimo = sorted(lista_camino_minimo, key = lambda x: x.peso_camino)
 
             caminoMasCorto = lista_camino_minimo[0].esquinas
-            # hacer funcion recursiva desde mapa[caminoMasCorto[0]].dijkstra hasta caminoMasCorto[1]
+            # Funcion recursiva desde mapa[caminoMasCorto[0]].dijkstra hasta caminoMasCorto[1]
             lista_recorrido = self.recorrido(mapa[caminoMasCorto[0]].dijkstra, caminoMasCorto[1] , [])
             lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
             return lista_recorrido
