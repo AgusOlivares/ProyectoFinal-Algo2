@@ -465,7 +465,13 @@ class Map:
                 lista_ranking.append(nodo_aux)
 
         lista_ranking = sorted(lista_ranking, key=lambda x: x.precio_viaje)
-        return lista_ranking
+        aux_list = []
+        for nodo in lista_ranking:
+            if int(mapa[persona].monto) >= nodo.precio_viaje:
+                aux_list.append((nodo.auto , nodo.precio_viaje))
+        if len(aux_list) > 3:
+            aux_list = aux_list[:3]  #Tomo los 3 primeros
+        return aux_list
 
     def exist_location(self, mapa , direccion):
 
@@ -568,15 +574,19 @@ class Map:
 
             if distancia_total_1 <= distancia_camino_2:
                 #Funcion recursiva desde mapa[esquina_persona].dijkstra esquina_final_dijkstra_1
-                pass
+                lista_recorrido = self.recorrido(mapa[esquina_persona].dijkstra, esquina_final_dijkstra_1, [])
+                lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
             else:
                 #Funcion recursiva desde mapa[esquina_persona].dijkstra esquina_final_dijkstra_2
-                pass
+                lista_recorrido = self.recorrido(mapa[esquina_persona].dijkstra, esquina_final_dijkstra_2, [])
+                lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
+
+            return lista_recorrido
         
         elif esquina_final_dijkstra != None and esquina_persona == None:
 
-            distancia_camino_1 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra]
-            distancia_camino_2 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra]
+            distancia_camino_1 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra].peso_minimo
+            distancia_camino_2 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra].peso_minimo
             distancia_persona_1 = mapa[persona].direccion[0][1]
             distancia_persona_2 = mapa[persona].direccion[1][1]
 
@@ -587,16 +597,21 @@ class Map:
                     
             if distancia_total_1 <= distancia_camino_2:
                 #Funcion recursiva desde mapa[esquina persona_1].dijkstra hasta esquina_final_dijkstra
-                pass
+                lista_recorrido = self.recorrido(mapa[esquina_persona_1].dijkstra, esquina_final_dijkstra, [])
+                lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
             else:
                 #Funcion recursiva desde mapa[esquina persona_2].dijkstra hasta esquina_final_dijkstra
-                pass
+                lista_recorrido = self.recorrido(mapa[esquina_persona_2].dijkstra, esquina_final_dijkstra, [])
+                lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
+
+            return lista_recorrido
+        
         elif esquina_final_dijkstra == None and esquina_persona == None:
             
-            distancia_camino_1 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra_1]
-            distancia_camino_2 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra_2]
-            distancia_camino_3 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra_1]
-            distancia_camino_4 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra_2]
+            distancia_camino_1 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra_1].peso_minimo
+            distancia_camino_2 = mapa[esquina_persona_1].dijkstra[esquina_final_dijkstra_2].peso_minimo
+            distancia_camino_3 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra_1].peso_minimo
+            distancia_camino_4 = mapa[esquina_persona_2].dijkstra[esquina_final_dijkstra_2].peso_minimo
 
             distancia_persona_1 = mapa[persona].direccion[0][1] #esquina_persona_1  distancia
             distancia_persona_2 = mapa[persona].direccion[1][1] #esquina_persona_2  distancia
@@ -626,7 +641,9 @@ class Map:
 
             caminoMasCorto = lista_camino_minimo[0].esquinas
             # hacer funcion recursiva desde mapa[caminoMasCorto[0]].dijkstra hasta caminoMasCorto[1]
-
+            lista_recorrido = self.recorrido(mapa[caminoMasCorto[0]].dijkstra, caminoMasCorto[1] , [])
+            lista_recorrido = self.hacer_tupla(persona, lista_recorrido, ubicacion)
+            return lista_recorrido
 
     def recorrido(self, mapa_dijkstra, esquina_destino, lista):
 

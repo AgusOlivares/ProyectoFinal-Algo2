@@ -141,7 +141,7 @@ if args.consult:
         parser.error("El elemento no existe")
 
 if args.create_trip:
-     
+
     new_map = hacer_lectura("serializado.txt")
 
     persona = args.create_trip[0]
@@ -188,7 +188,9 @@ if args.create_trip:
 
     
     if type(destino_final) != list:
-        destino_final = mapa[destino_final].direccion
+        destino_final_direccion = new_map[destino_final].direccion
+    else:
+        mapa.insert_fixed(new_map , "Destino" , destino_final)
 
     ## (RESUELTO) Reviso si el destino existe (Podria hacer una funcion que busque si existe la arista y si la distancia es correcta)
     ## (RESUELTO) Si no es correcta 'return "La direccion no existe" '
@@ -197,7 +199,13 @@ if args.create_trip:
 
 
     # clear_terminal() # hago clear de la terminal(Ver si utilizo esto)
-    mapa.ranking_autos(new_map, persona)
+    ranking_autos = mapa.ranking_autos(new_map, persona)
+    i=1
+    for (auto,monto) in ranking_autos:
+        print(f"Opcion {i}: El auto {auto} tiene una tarifa de: {monto}")
+        i +=1 
+
+    auto_elegido = int(input("Indique con un numero el auto elegido: "))-1
     ## Devuelvo el ranking de los autos que puede pagar la persona
 
     Opcion_cliente = input("Acepta el viaje? Y/N: ")
@@ -225,7 +233,26 @@ if args.create_trip:
         # insert_fixed(new_mapa, persona, destino_final, monto_nuevo_P)
         # insert_fixed(new_mapa, aux_auto, destino_final, monto_auto)
         # serializar_archivo(new_map)
-     
+        
+        aux_auto = ranking_autos[auto_elegido][0]
+        print(f"El auto elegido es {aux_auto}")
+        monto_auto = new_map[aux_auto].monto
+        monto_nuevo_persona = int(new_map[persona].monto)-ranking_autos[auto_elegido][1]
+
+        if "Destino" in new_map:
+            print(f"El recorrido del mapa es: {mapa.short_path(new_map , persona , 'Destino')}")
+            mapa.delete("Destino")
+        else:
+            print(f"El recorrido del mapa es: {mapa.short_path(new_map , persona , destino_final)}")
+
+        mapa.delete(new_map,persona)
+        mapa.delete(new_map,aux_auto)
+        mapa.insert_movile(new_map, persona, destino_final_direccion, monto_nuevo_persona)
+        mapa.insert_movile(new_map, persona, destino_final_direccion, monto_auto)
+
+        serializar_archivo(new_map)
+
+
 
         pass
     elif Opcion_cliente == "N":
@@ -236,77 +263,16 @@ if args.create_trip:
         parser.error("La opcion seleccionada no se encuentra, por favor reiniciar el viaje")
 
 
-'''
-def leer_archivo(archivo):
-    V = []
-    A = []
-    """
-    line.split("=") separa la lista en 2 y luego elejimos el segundo elemento [1]
-    luego la funcion eval() toma esa linea como una linea valida de python y 
-    le asigna esa lista a la variable lista_e y lista_a respectivamente
-    """    
-    with open(archivo, "r") as file:
-        for line in file:
-            if line.startswith("E"):
-                # Extraer la lista de E
-                V = eval(line.split("=")[1])
-            elif line.startswith("A"):
-                # Extraer la lista de A
-                A = eval(line.split("=")[1])
-
-    return V, A
-
-def serializar_archivo(objeto):  # Se serializa el mapa (Diccionario)
-    import pickle
-
-    with open("serializado.txt" , "bw") as ser:
-        pickle.dump(objeto , ser)
-
-def hacer_lectura(archivo):
-    import pickle   
-
-    with open(archivo , "br") as map:
-        mapa = pickle.load(map)
-    return mapa
-
-
-def load_map(local_path): ## Planteamiento
-    V, A = leer_archivo(local_path)
-    mapa = m.Map(V , A)
-    new_map = mapa.createMap(V , A) # Mapa con nodos y aristas
-    serializar_archivo(new_map)
-    print(V)
-'''
-''' Codigo para probar dijkstra
-V, A = leer_archivo("test_dijkstra.txt") #Recordar que es el test de Dijkstra , no el mapa
-print(V)
-print(A)
-mapa = m.Map(V , A)
-new_map = mapa.createMap(V , A)
-#print(mapa.Dijkstra(new_map, new_map["s"]))
-print(mapa.dijkstraInNodes(new_map))
-serializar_archivo(new_map)
-aux = hacer_lectura("serializado.txt")
-'''
-
-#Codigo para probar Dijkstra en cada nodo
-'''
-V, A = leer_archivo("mapa-ejemplo.txt") 
-print(V)
-print(A)
-mapa = m.Map(V , A)
-new_map = mapa.createMap(V , A)
-print(mapa.Dijkstra(new_map, new_map["e1"]))
-serializar_archivo(new_map)
-
-'''
 #A partir del mapa de prueba cargado voy a trabajar para implementar el create_trip (No contiene los nodos fijos y moviles todavia)
 aux = hacer_lectura("serializado.txt")
+print(aux)
 mapa = m.Map()
-mapa.ranking_autos(aux , "P2")
-lista = mapa.short_path(aux, "P1", "H1")
-
-print(lista)
+# mapa.ranking_autos(aux , "P2")
+#lista1 = mapa.short_path(aux, "P1", "H1")
+#lista2 = mapa.short_path(aux , "P1" , "H2")
+#lista3 = mapa.short_path(aux , "P2" , "H1")
+#lista4 = mapa.short_path(aux , "P2" , "H3")
+#print(lista4)
 #mapa.delete(aux, "C1")
 print("--"*10)
 
